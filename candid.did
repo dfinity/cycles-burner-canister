@@ -1,0 +1,9 @@
+/// Canister configuration.
+type config = record {
+    burning_rate : nat128;
+}
+
+service : (config) -> {
+    /// Returns the config.
+    get_config : () -> (config) query;
+}
