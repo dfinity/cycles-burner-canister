@@ -1,5 +1,7 @@
+mod config;
 mod storage;
 
+use crate::config::Config;
 use ic_cdk_macros::{init, inspect_message, query};
 use std::{
     cell::RefCell,
@@ -17,7 +19,7 @@ mod ic0 {
 
 thread_local! {
     /// The local storage for the configuration.
-    static CONFIG: RefCell<u128> = RefCell::new(0);
+    static CONFIG: RefCell<Config> = RefCell::new(Config::default());
     /// The global counter to increment periodically.
     static COUNTER: RefCell<u32> = RefCell::new(0);
 }
@@ -29,7 +31,7 @@ static CYCLES_USED: AtomicU64 = AtomicU64::new(0);
 
 fn cycles_burn() {
     let mut bytes = vec![0u8; 16];
-    let cycles = crate::storage::get_config();
+    let cycles = crate::storage::get_config().burn_rate;
     let amount_high: u64 = (cycles >> 64) as u64;
     let amount_low: u64 = ((cycles << 64) >> 64) as u64;
     unsafe { ic0::cycles_burn128(amount_high, amount_low, bytes.as_mut_ptr() as u32) }
@@ -59,8 +61,8 @@ fn periodic_task() {
     track_cycles_used();
 }
 
-fn start_with_interval_secs(secs: u64) {
-    let secs = Duration::from_secs(secs);
+fn start_with_interval_secs() {
+    let secs = Duration::from_secs(crate::storage::get_config().interval_between_timers_in_seconds);
     ic_cdk::println!("Timer canister: Starting a new timer with {secs:?} interval...");
     // Schedule a new periodic task.
     ic_cdk_timers::set_timer_interval(secs, periodic_task);
@@ -68,14 +70,14 @@ fn start_with_interval_secs(secs: u64) {
 
 /// This function is called when the canister is created.
 #[init]
-fn init(config: u128) {
+fn init(config: Config) {
     crate::storage::set_config(config);
-    start_with_interval_secs(86400);
+    start_with_interval_secs();
 }
 
 /// Returns the config.
 #[query]
-fn get_config() -> u128 {
+fn get_config() -> Config {
     crate::storage::get_config()
 }
 
