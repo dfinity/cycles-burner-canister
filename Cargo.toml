@@ -13,17 +13,7 @@ path = "src/main.rs"
 candid = "0.9.1"
 ic-cdk = "0.10.0"
 ic-cdk-macros = "0.7.0"
-ic-metrics-encoder = "1.0.0"
-ic-stable-structures = "0.5.2"
 ic-cdk-timers = "0.1"
 serde = "1.0.171"
 serde_bytes = "0.11"
 serde_json = "1.0.94"
-hex = "0.4.3"
-async-trait = "0.1.67"
-regex = "1.7.0"
-futures = "0.3.28"
-
-[dev-dependencies]
-tokio = { version = "1.29.1", features = ["full"] }
-assert-json-diff = "2.0.2"
