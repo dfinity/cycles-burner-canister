@@ -9,14 +9,6 @@ use std::{
     time::Duration,
 };
 
-#[allow(clippy::unused_unit)]
-mod ic0 {
-    #[link(wasm_import_module = "ic0")]
-    extern "C" {
-        pub fn cycles_burn128(amount_high: u64, amount_low: u64, dst: u32) -> ();
-    }
-}
-
 thread_local! {
     /// The local storage for the configuration.
     static CONFIG: RefCell<Config> = RefCell::new(Config::default());
@@ -28,14 +20,6 @@ thread_local! {
 static INITIAL_CANISTER_BALANCE: AtomicU64 = AtomicU64::new(0);
 /// Canister cycles usage tracked in the periodic task.
 static CYCLES_USED: AtomicU64 = AtomicU64::new(0);
-
-fn cycles_burn() {
-    let mut bytes = vec![0u8; 16];
-    let cycles = crate::storage::get_config().burn_rate;
-    let amount_high: u64 = (cycles >> 64) as u64;
-    let amount_low: u64 = ((cycles << 64) >> 64) as u64;
-    unsafe { ic0::cycles_burn128(amount_high, amount_low, bytes.as_mut_ptr() as u32) }
-}
 
 fn increment_counter() {
     COUNTER.with(|counter| {
@@ -55,7 +39,7 @@ fn track_cycles_used() {
 }
 
 fn periodic_task() {
-    cycles_burn();
+    ic_cdk::api::cycles_burn(crate::storage::get_config().burn_rate);
     // Just increment the counter.
     increment_counter();
     track_cycles_used();
