@@ -1,0 +1,32 @@
+{
+    "dfx": "0.14.3",
+    "canisters": {
+        "cycles-burner-canister": {
+            "type": "custom",
+            "candid": "./candid.did",
+            "wasm": "target/wasm32-unknown-unknown/release/cycles-burner-canister.wasm.gz",
+            "build": "./scripts/build-canister.sh cycles-burner-canister"
+        }
+    },
+    "defaults": {
+        "build": {
+            "packtool": ""
+        }
+    },
+    "networks": {
+        "local": {
+            "bind": "127.0.0.1:8000",
+            "type": "ephemeral",
+            "replica": {
+                "subnet_type": "system"
+            }
+        },
+        "testnet": {
+            "providers": [
+                "http://[2a00:fb01:400:42:5000:aaff:fea4:ae46]:8080"
+            ],
+            "type": "persistent"
+        }
+    },
+    "version": 1
+}
