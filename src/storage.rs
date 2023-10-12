@@ -1,5 +1,4 @@
-use crate::config::Config;
-use crate::CONFIG;
+use crate::{config::Config, CONFIG};
 
 /// Returns the configuration from the local storage.
 pub fn get_config() -> Config {
