@@ -9,6 +9,8 @@ use std::{
     time::Duration,
 };
 
+//export DFX_REPLICA_PATH=/home/dragoljub-duric/replica
+
 thread_local! {
     /// The local storage for the configuration.
     static CONFIG: RefCell<Config> = RefCell::new(Config::default());
