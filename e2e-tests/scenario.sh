@@ -3,6 +3,8 @@ set -Eexuo pipefail
 
 SCRIPT_DIR="$( cd -- "$( dirname -- "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )"
 
+export PATH="$SCRIPT_DIR/target/bin:$PATH"
+
 # Run dfx stop if we run into errors.
 trap "dfx stop" EXIT SIGINT
 
