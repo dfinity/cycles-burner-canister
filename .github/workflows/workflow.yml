@@ -127,7 +127,7 @@ jobs:
       env:
         SHELLCHECK_OPTS: -e SC1090 -e SC2119 -e SC1091
   
-    e2e-scenario:
+  e2e-scenario:
     runs-on: ubuntu-20.04
     needs: cargo-build
 
