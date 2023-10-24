@@ -1,0 +1,5 @@
+type config = record {
+  burn_rate : nat;
+  interval_between_timers_in_seconds : nat64;
+};
+service : { get_config : () -> (config) query }
