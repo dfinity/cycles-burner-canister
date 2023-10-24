@@ -15,6 +15,7 @@ impl Config {
     pub fn default() -> Config {
         Config {
             burn_rate: 0,
+            // Default interval between timers in one day.
             interval_between_timers_in_seconds: 86400,
         }
     }

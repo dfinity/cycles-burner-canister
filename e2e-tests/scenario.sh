@@ -16,7 +16,7 @@ dfx start --background --clean
 
 INITIAL_BALANCE=100000000000
 BURN_RATE="10_000_000_000"
-INTERVAL=5
+INTERVAL=10
 
 dfx deploy --no-wallet --with-cycles "$INITIAL_BALANCE" cycles-burner-canister --argument "(record {
     burn_rate = $BURN_RATE;
