@@ -17,7 +17,7 @@
 
 # The docker image. To update, run `docker pull ubuntu` locally, and update the
 # sha256:... accordingly.
-FROM ubuntu@sha256:626ffe58f6e7566e00254b638eb7e0f3b11d4da9675088f4781a50ae288f3322
+FROM ubuntu@sha256:2b7412e6465c3c7fc5bb21d3e6f1917c167358449fecac8176c6e496e5c1f05f
 
 # NOTE: if this version is updated, then the version in rust-toolchain.toml
 # should be updated as well.
@@ -50,7 +50,7 @@ ENV PATH=/cargo/bin:$PATH
 COPY . .
 
 RUN \
-    # Building bitcoin canister...
+    # Building cycles-burner-canister...
     scripts/build-canister.sh cycles-burner-canister && \
     cp target/wasm32-unknown-unknown/release/cycles-burner-canister.wasm.gz cycles-burner-canister.wasm.gz && \
-    sha256sum cycles-burner-canister.wasm.gz && \
+    sha256sum cycles-burner-canister.wasm.gz
