@@ -6,6 +6,7 @@ SCRIPT_DIR="$( cd -- "$( dirname -- "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )
 export PATH="$SCRIPT_DIR/target/bin:$PATH"
 
 set_correct_replica_and_canister_sandbox(){
+    chmod +x replica canister_sandbox
     PATH_TO_DFX_CACHE="$HOME/.cache/dfinity/versions/$(dfx --version | awk '{ print $2 }')"
     rm -f "$PATH_TO_DFX_CACHE/replica" "$PATH_TO_DFX_CACHE/canister_sandbox"
     cp canister_sandbox "$PATH_TO_DFX_CACHE"
