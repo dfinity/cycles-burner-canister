@@ -1,7 +1,7 @@
 /// Canister configuration.
 type config = record {
     /// Amount of burned cycles per timer.
-    burn_rate : nat;
+    burn_amount : nat;
 
     /// Interval between timers in seconds.
     interval_between_timers_in_seconds : nat;
