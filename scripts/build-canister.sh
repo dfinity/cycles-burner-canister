@@ -8,14 +8,6 @@ CANISTER=$1
 
 pushd "$SCRIPT_DIR"
 
-# NOTE: On macOS a specific version of llvm-ar and clang need to be set here.
-# Otherwise the wasm compilation of rust-secp256k1 will fail.
-if [ "$(uname)" == "Darwin" ]; then
-  LLVM_PATH=$(brew --prefix llvm)
-  export AR="${LLVM_PATH}/bin/llvm-ar"
-  export CC="${LLVM_PATH}/bin/clang"
-fi
-
 cargo build --bin "$CANISTER" --target "$TARGET" --release
 
 # Navigate to root directory.
