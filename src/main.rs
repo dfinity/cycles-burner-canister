@@ -42,7 +42,7 @@ fn periodic_task() {
     ic_cdk::api::cycles_burn(crate::storage::get_config().burn_amount);
     // Just increment the counter.
     increment_counter();
-    track_cycles_used();
+    track_cycles_burnt();
 }
 
 fn start_with_interval_secs() {
