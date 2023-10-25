@@ -1,0 +1,5 @@
+[toolchain]
+# NOTE: if this version is updated, then the version in the Dockerfile and in CI should
+# also be updated.
+channel = "1.73.0"
+targets = ["wasm32-unknown-unknown"]
