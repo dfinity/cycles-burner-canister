@@ -21,7 +21,7 @@ FROM ubuntu@sha256:2b7412e6465c3c7fc5bb21d3e6f1917c167358449fecac8176c6e496e5c1f
 
 # NOTE: if this version is updated, then the version in rust-toolchain.toml
 # should be updated as well.
-ARG rust_version=1.68.0
+ARG rust_version=1.73.0
 
 # Setting the timezone and installing the necessary dependencies
 ENV TZ=UTC
@@ -51,6 +51,6 @@ COPY . .
 
 RUN \
     # Building cycles-burner-canister...
-    scripts/build-canister.sh cycles-burner-canister && \
+    cargo build --bin cycles-burner-canister --target wasm32-unknown-unknown --release && \
     cp target/wasm32-unknown-unknown/release/cycles-burner-canister.wasm.gz cycles-burner-canister.wasm.gz && \
     sha256sum cycles-burner-canister.wasm.gz
