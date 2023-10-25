@@ -8,7 +8,7 @@ name = "cycles-burner-canister"
 path = "src/main.rs"
 
 [dependencies]
-candid = "0.9.1"
+candid = "0.9.10"
 ic-cdk = "0.11.2"
 ic-cdk-macros = "0.7.0"
 ic-cdk-timers = "0.1"
