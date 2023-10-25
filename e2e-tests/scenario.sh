@@ -20,6 +20,10 @@ get_balance() {
 # Run dfx stop if we run into errors.
 trap "dfx stop" EXIT SIGINT
 
+dfx start --background --clean
+
+dfx stop
+
 set_correct_replica_and_canister_sandbox
 
 dfx start --background --clean
