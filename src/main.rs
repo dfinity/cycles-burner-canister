@@ -28,7 +28,7 @@ fn increment_counter() {
     });
 }
 
-/// Tracks the amount of cycles used for the periodic task.
+/// Tracks the amount of cycles burnt by the periodic task.
 fn track_cycles_burnt() {
     // Update the `INITIAL_CANISTER_BALANCE` if needed.
     let current_canister_balance = ic_cdk::api::canister_balance();
