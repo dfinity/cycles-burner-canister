@@ -4,7 +4,7 @@ type config = record {
     burn_rate : nat;
 
     /// Interval between timers in seconds.
-    interval_between_timers_in_seconds : nat64;
+    interval_between_timers_in_seconds : nat;
 };
 
 service : (config) -> {
