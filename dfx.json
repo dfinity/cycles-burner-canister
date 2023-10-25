@@ -2,10 +2,9 @@
     "dfx": "0.15.1",
     "canisters": {
         "cycles-burner-canister": {
-            "type": "custom",
-            "candid": "./candid.did",
-            "wasm": "target/wasm32-unknown-unknown/release/cycles-burner-canister.wasm.gz",
-            "build": "./scripts/build-canister.sh cycles-burner-canister"
+            "type": "rust",
+            "package": "cycles-burner-canister",
+            "candid": "./candid.did"
         }
     },
     "defaults": {
