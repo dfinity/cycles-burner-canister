@@ -42,7 +42,8 @@ fn periodic_task() {
 }
 
 fn start_with_interval_secs() {
-    let secs = Duration::from_secs(crate::storage::get_config().interval_between_timers_in_seconds);
+    let secs =
+        Duration::from_secs(crate::storage::get_config().interval_between_timers_in_seconds as u64);
     ic_cdk::println!("Timer canister: Starting a new timer with {secs:?} interval...");
     // Schedule a new periodic task.
     ic_cdk_timers::set_timer_interval(secs, periodic_task);
