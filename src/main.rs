@@ -2,6 +2,7 @@ mod config;
 mod storage;
 
 use crate::config::Config;
+use ic_cdk::api::call::{reject, reply};
 use ic_cdk_macros::{init, inspect_message, post_upgrade, pre_upgrade, query};
 use std::{cell::RefCell, time::Duration};
 
@@ -47,14 +48,18 @@ fn start_with_interval_secs() {
     ic_cdk_timers::set_timer_interval(secs, periodic_task);
 }
 
-#[query]
-pub fn get_config() -> Config {
-    crate::storage::get_config()
+#[query(manual_reply = true)]
+pub fn get_config() {
+    if ic_cdk::api::data_certificate().is_none() {
+        reject("get_config cannot be called in replicated mode");
+        return;
+    }
+    reply((crate::storage::get_config(),))
 }
 
 #[inspect_message]
 fn inspect_message() {
-    // Reject all replicated calls.
+    // Reject all replicated ingress calls.
 }
 
 /// This function is called when the canister is created.
