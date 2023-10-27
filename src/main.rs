@@ -50,11 +50,10 @@ fn start_with_interval_secs() {
 
 #[query(manual_reply = true)]
 pub fn get_config() {
-    if ic_cdk::api::data_certificate().is_none() {
-        reject("get_config cannot be called in replicated mode");
-        return;
+    match ic_cdk::api::data_certificate() => {
+      None => reject("get_config cannot be called in replicated mode"),
+      _ => reply((crate::storage::get_config(),)),
     }
-    reply((crate::storage::get_config(),))
 }
 
 #[inspect_message]
