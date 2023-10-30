@@ -96,3 +96,34 @@ fn post_upgrade() {
 
     init_private(config, Some(counter), Some(total_cycles_burnt));
 }
+
+#[cfg(test)]
+mod test {
+    use super::*;
+    use proptest::prelude::*;
+
+    proptest! {
+        #![proptest_config(ProptestConfig::with_cases(1))]
+        #[test]
+        fn upgrade(
+            burn_amount in 1_000_000..10_000_000_000u128,
+            counter in 0..1_000_000u32,
+            total_cycles_burnt in 1_000_000..100_000_000_000u128,
+            interval_between_timers_in_seconds in 0..1_000_000_000u64,
+        ) {
+            let config = Config { burn_amount, interval_between_timers_in_seconds };
+            crate::storage::set_config(config.clone());
+            COUNTER.with(|c| *c.borrow_mut() = counter);
+            TOTAL_CYCLES_BURNT.with(|c| *c.borrow_mut() = total_cycles_burnt);
+
+            // Run the preupgrade hook.
+            pre_upgrade();
+
+            post_upgrade();
+
+            assert_eq!(config, crate::storage::get_config());
+            assert_eq!(counter, COUNTER.with(|c| c.borrow().clone()));
+            assert_eq!(total_cycles_burnt, TOTAL_CYCLES_BURNT.with(|c| c.borrow().clone()));
+        }
+    }
+}
