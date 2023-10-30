@@ -1,9 +1,13 @@
 mod config;
+mod metrics;
 mod storage;
+mod types;
 
 use crate::config::Config;
+use crate::types::{CandidHttpRequest, CandidHttpResponse};
 use ic_cdk::api::call::{reject, reply};
 use ic_cdk_macros::{init, inspect_message, post_upgrade, pre_upgrade, query};
+use serde_bytes::ByteBuf;
 use std::{cell::RefCell, time::Duration};
 
 thread_local! {
@@ -82,8 +86,8 @@ fn main() {}
 #[pre_upgrade]
 fn pre_upgrade() {
     let config = crate::storage::get_config();
-    let counter = COUNTER.with(|c| *c.borrow());
-    let total_cycles_burnt = TOTAL_CYCLES_BURNT.with(|c| *c.borrow());
+    let counter = get_counter();
+    let total_cycles_burnt = get_total_cycles_burnt();
     ic_cdk::storage::stable_save((config, counter, total_cycles_burnt))
         .expect("Saving data to stable store must succeed.");
 }
@@ -97,6 +101,29 @@ fn post_upgrade() {
     init_private(config, Some(counter), Some(total_cycles_burnt));
 }
 
+/// Processes external HTTP requests.
+#[query]
+pub fn http_request(request: CandidHttpRequest) -> CandidHttpResponse {
+    let parts: Vec<&str> = request.url.split('?').collect();
+    match parts[0] {
+        "/metrics" => crate::metrics::get_metrics(),
+        _ => CandidHttpResponse {
+            status_code: 404,
+            headers: vec![],
+            body: ByteBuf::from(String::from("Not found.")),
+        },
+    }
+}
+
+fn get_counter() -> u32 {
+    COUNTER.with(|c| *c.borrow())
+}
+
+fn get_total_cycles_burnt() -> u128 {
+    TOTAL_CYCLES_BURNT.with(|c| *c.borrow())
+}
+
+/*
 #[cfg(test)]
 mod test {
     use super::*;
@@ -127,3 +154,4 @@ mod test {
         }
     }
 }
+*/
