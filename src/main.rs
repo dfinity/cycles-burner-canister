@@ -1,9 +1,13 @@
 mod config;
+mod metrics;
 mod storage;
+mod types;
 
 use crate::config::Config;
+use crate::types::{CandidHttpRequest, CandidHttpResponse};
 use ic_cdk::api::call::{reject, reply};
 use ic_cdk_macros::{init, inspect_message, post_upgrade, pre_upgrade, query};
+use serde_bytes::ByteBuf;
 use std::{cell::RefCell, time::Duration};
 
 thread_local! {
@@ -51,11 +55,10 @@ fn start_with_interval_secs() {
 
 #[query(manual_reply = true)]
 pub fn get_config() {
-    if ic_cdk::api::data_certificate().is_none() {
-        reject("get_config cannot be called in replicated mode");
-        return;
+    match ic_cdk::api::data_certificate() {
+        None => reject("get_config cannot be called in replicated mode"),
+        _ => reply((crate::storage::get_config(),)),
     }
-    reply((crate::storage::get_config(),))
 }
 
 #[inspect_message]
@@ -84,8 +87,8 @@ fn main() {}
 #[pre_upgrade]
 fn pre_upgrade() {
     let config = crate::storage::get_config();
-    let counter = COUNTER.with(|c| *c.borrow());
-    let total_cycles_burnt = TOTAL_CYCLES_BURNT.with(|c| *c.borrow());
+    let counter = get_counter();
+    let total_cycles_burnt = get_total_cycles_burnt();
     ic_cdk::storage::stable_save((config, counter, total_cycles_burnt))
         .expect("Saving data to stable store must succeed.");
 }
@@ -98,3 +101,58 @@ fn post_upgrade() {
 
     init_private(config, Some(counter), Some(total_cycles_burnt));
 }
+
+/// Processes external HTTP requests.
+#[query]
+pub fn http_request(request: CandidHttpRequest) -> CandidHttpResponse {
+    let parts: Vec<&str> = request.url.split('?').collect();
+    match parts[0] {
+        "/metrics" => crate::metrics::get_metrics(),
+        _ => CandidHttpResponse {
+            status_code: 404,
+            headers: vec![],
+            body: ByteBuf::from(String::from("Not found.")),
+        },
+    }
+}
+
+fn get_counter() -> u32 {
+    COUNTER.with(|c| *c.borrow())
+}
+
+fn get_total_cycles_burnt() -> u128 {
+    TOTAL_CYCLES_BURNT.with(|c| *c.borrow())
+}
+
+/*
+#[cfg(test)]
+mod test {
+    use super::*;
+    use proptest::prelude::*;
+
+    proptest! {
+        #![proptest_config(ProptestConfig::with_cases(1))]
+        #[test]
+        fn upgrade(
+            burn_amount in 1_000_000..10_000_000_000u128,
+            counter in 0..1_000_000u32,
+            total_cycles_burnt in 1_000_000..100_000_000_000u128,
+            interval_between_timers_in_seconds in 0..1_000_000_000u64,
+        ) {
+            let config = Config { burn_amount, interval_between_timers_in_seconds };
+            crate::storage::set_config(config.clone());
+            COUNTER.with(|c| *c.borrow_mut() = counter);
+            TOTAL_CYCLES_BURNT.with(|c| *c.borrow_mut() = total_cycles_burnt);
+
+            // Run the preupgrade hook.
+            pre_upgrade();
+
+            post_upgrade();
+
+            assert_eq!(config, crate::storage::get_config());
+            assert_eq!(counter, COUNTER.with(|c| c.borrow().clone()));
+            assert_eq!(total_cycles_burnt, TOTAL_CYCLES_BURNT.with(|c| c.borrow().clone()));
+        }
+    }
+}
+*/

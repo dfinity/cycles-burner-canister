@@ -11,8 +11,8 @@ pub struct Config {
     pub burn_amount: u128,
 }
 
-impl Config {
-    pub fn default() -> Config {
+impl Default for Config {
+    fn default() -> Config {
         Config {
             // Default interval between timers in one day.
             interval_between_timers_in_seconds: 86400,
