@@ -14,6 +14,7 @@ INITIAL_BALANCE=100000000000
 BURN_AMOUNT="10_000_000_000"
 INTERVAL=10
 
+# Deploy canister
 dfx deploy --no-wallet --with-cycles "$INITIAL_BALANCE" cycles-burner-canister --argument "(record {
     interval_between_timers_in_seconds = $INTERVAL;
     burn_amount = $BURN_AMOUNT;
@@ -27,21 +28,27 @@ EXPECTED_CONFIG="(
   },
 )"
 
+# Test that the config is initialized properly.
 if [ "$CONFIG" != "$EXPECTED_CONFIG" ]; then
     echo "ERROR in get_config."
     EXIT SIGINT
 fi
 
+# Check the initial banance.
 if [ "$(get_balance)" != "100_000_000_000" ]; then
     EXIT SIGINT
 fi
-sleep $INTERVAL
 
+# Wait for the global timer.
+sleep $INTERVAL
+# Test that the global timer is executed and the balance is updated.
 if [ "$(get_balance)" != "90_000_000_000" ]; then
     EXIT SIGINT
 fi
-sleep $INTERVAL
 
+# Wait for the global timer.
+sleep $INTERVAL
+# Test that the global timer is executed and the balance is updated.
 if [ "$(get_balance)" != "80_000_000_000" ]; then
     EXIT SIGINT
 fi

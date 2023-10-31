@@ -39,7 +39,7 @@ if ! [[ $(dfx canister status cycles-burner-canister 2>&1) == *"Status: Stopped"
 fi
 
 # Upgrade canister
-dfx deploy --no-wallet --with-cycles "$INITIAL_BALANCE" cycles-burner-canister
+dfx deploy --no-wallet cycles-burner-canister
 
 dfx canister start cycles-burner-canister
 
