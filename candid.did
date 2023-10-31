@@ -10,4 +10,4 @@ type config = record {
 service : (config) -> {
     /// Returns the config.
     get_config : () -> (config) query;
-}
+};
