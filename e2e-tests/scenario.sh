@@ -40,14 +40,14 @@ if [ "$(get_balance)" != "100_000_000_000" ]; then
 fi
 
 # Wait for the global timer.
-sleep $INTERVAL
+sleep $(($INTERVAL + 1))
 # Test that the global timer is executed and the balance is updated.
 if [ "$(get_balance)" != "90_000_000_000" ]; then
     EXIT SIGINT
 fi
 
 # Wait for the global timer.
-sleep $INTERVAL
+sleep $(($INTERVAL + 1))
 # Test that the global timer is executed and the balance is updated.
 if [ "$(get_balance)" != "80_000_000_000" ]; then
     EXIT SIGINT
