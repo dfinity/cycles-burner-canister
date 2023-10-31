@@ -10,7 +10,7 @@ BURN_AMOUNT="10_000_000_000"
 INTERVAL=10
 
 # Deploy canister
-dfx deploy --no-wallet --with-cycles "$INITIAL_BALANCE" cycles-burner-canister --argument "(record {
+dfx deploy --no-wallet --with-cycles "$INITIAL_BALANCE" cycles-burner-canister --argument "(opt record {
     interval_between_timers_in_seconds = $INTERVAL;
     burn_amount = $BURN_AMOUNT;
 })"
@@ -39,7 +39,7 @@ if ! [[ $(dfx canister status cycles-burner-canister 2>&1) == *"Status: Stopped"
 fi
 
 # Upgrade canister
-dfx deploy --no-wallet cycles-burner-canister
+dfx deploy --upgrade-unchanged cycles-burner-canister
 
 dfx canister start cycles-burner-canister
 

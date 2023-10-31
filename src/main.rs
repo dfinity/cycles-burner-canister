@@ -68,12 +68,14 @@ fn inspect_message() {
 
 /// This function is called when the canister is created.
 #[init]
-fn init(config: Config) {
+fn init(config: Option<Config>) {
     init_private(config, None, None);
 }
 
-fn init_private(config: Config, counter: Option<u32>, total_cycles_burnt: Option<u128>) {
-    crate::storage::set_config(config);
+fn init_private(config: Option<Config>, counter: Option<u32>, total_cycles_burnt: Option<u128>) {
+    if let Some(config) = config {
+        crate::storage::set_config(config);
+    }
     if let Some(counter) = counter {
         COUNTER.with(|c| *c.borrow_mut() = counter);
     }
@@ -99,7 +101,7 @@ fn post_upgrade() {
         ic_cdk::storage::stable_restore::<(Config, u32, u128)>()
             .expect("Failed to read data from stable memory.");
 
-    init_private(config, Some(counter), Some(total_cycles_burnt));
+    init_private(Some(config), Some(counter), Some(total_cycles_burnt));
 }
 
 /// Processes external HTTP requests.

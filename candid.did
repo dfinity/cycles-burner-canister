@@ -7,7 +7,7 @@ type config = record {
     burn_amount : nat;
 };
 
-service : (config) -> {
+service : (opt config) -> {
     /// Returns the config.
     get_config : () -> (config) query;
 };
