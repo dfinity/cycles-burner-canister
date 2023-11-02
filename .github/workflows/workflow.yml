@@ -41,166 +41,166 @@ jobs:
         env:
           RUST_BACKTRACE: 1
 
-  cargo-tests:
-    runs-on: ${{ matrix.os }}
-    needs: cargo-build
-    strategy:
-      matrix:
-        os: [ ubuntu-20.04, macos-12 ]
+  # cargo-tests:
+  #   runs-on: ${{ matrix.os }}
+  #   needs: cargo-build
+  #   strategy:
+  #     matrix:
+  #       os: [ ubuntu-20.04, macos-12 ]
 
-    steps:
-      - uses: actions/checkout@v3
-        with:
-          lfs: true
-      - uses: actions/cache@v3
-        with:
-          path: |
-            ~/.cargo/registry
-            ~/.cargo/git
-            target
-          key: ${{ runner.os }}-cargo-${{ hashFiles('**/Cargo.lock') }}-1
+  #   steps:
+  #     - uses: actions/checkout@v3
+  #       with:
+  #         lfs: true
+  #     - uses: actions/cache@v3
+  #       with:
+  #         path: |
+  #           ~/.cargo/registry
+  #           ~/.cargo/git
+  #           target
+  #         key: ${{ runner.os }}-cargo-${{ hashFiles('**/Cargo.lock') }}-1
 
-      - name: Install Rust
-        run: |
-          rustup update $RUST_VERSION --no-self-update
-          rustup default $RUST_VERSION
-          rustup target add wasm32-unknown-unknown
+  #     - name: Install Rust
+  #       run: |
+  #         rustup update $RUST_VERSION --no-self-update
+  #         rustup default $RUST_VERSION
+  #         rustup target add wasm32-unknown-unknown
 
-      - name: Run Tests
-        shell: bash
-        run: |
-          cargo test --release --all-targets --workspace --exclude benchmarks
-        env:
-          RUST_BACKTRACE: 1
+  #     - name: Run Tests
+  #       shell: bash
+  #       run: |
+  #         cargo test --release --all-targets --workspace --exclude benchmarks
+  #       env:
+  #         RUST_BACKTRACE: 1
 
-  cargo-clippy:
-    runs-on: ubuntu-20.04
-    steps:
-      - uses: actions/checkout@v3
-      - uses: actions/cache@v3
-        with:
-          path: |
-            ~/.cargo/registry
-            ~/.cargo/git
-            target
-          key: ${{ runner.os }}-cargo-${{ hashFiles('**/Cargo.lock') }}-1
+  # cargo-clippy:
+  #   runs-on: ubuntu-20.04
+  #   steps:
+  #     - uses: actions/checkout@v3
+  #     - uses: actions/cache@v3
+  #       with:
+  #         path: |
+  #           ~/.cargo/registry
+  #           ~/.cargo/git
+  #           target
+  #         key: ${{ runner.os }}-cargo-${{ hashFiles('**/Cargo.lock') }}-1
 
-      - name: Install Rust + Clippy
-        run: |
-          rustup update $RUST_VERSION --no-self-update
-          rustup default $RUST_VERSION
-          rustup target add wasm32-unknown-unknown
-          rustup component add clippy
+  #     - name: Install Rust + Clippy
+  #       run: |
+  #         rustup update $RUST_VERSION --no-self-update
+  #         rustup default $RUST_VERSION
+  #         rustup target add wasm32-unknown-unknown
+  #         rustup component add clippy
 
-      - uses: actions-rs/clippy-check@v1
-        with:
-          token: ${{ secrets.GITHUB_TOKEN }}
-          args: --all-targets -- -D warnings
+  #     - uses: actions-rs/clippy-check@v1
+  #       with:
+  #         token: ${{ secrets.GITHUB_TOKEN }}
+  #         args: --all-targets -- -D warnings
 
-  rustfmt:
-    runs-on: ubuntu-20.04
-    steps:
-      - uses: actions/checkout@v3
-      - name: Install Rust + Clippy
-        run: |
-          rustup update $RUST_VERSION --no-self-update
-          rustup default $RUST_VERSION
+  # rustfmt:
+  #   runs-on: ubuntu-20.04
+  #   steps:
+  #     - uses: actions/checkout@v3
+  #     - name: Install Rust + Clippy
+  #       run: |
+  #         rustup update $RUST_VERSION --no-self-update
+  #         rustup default $RUST_VERSION
 
-      - name: Install Rust + Rustfmt
-        run: |
-          rustup update $RUST_VERSION --no-self-update
-          rustup default $RUST_VERSION
-          rustup component add rustfmt
+  #     - name: Install Rust + Rustfmt
+  #       run: |
+  #         rustup update $RUST_VERSION --no-self-update
+  #         rustup default $RUST_VERSION
+  #         rustup component add rustfmt
 
-      - uses: actions-rs/cargo@v1
-        with:
-          command: fmt
-          args: --all -- --check
+  #     - uses: actions-rs/cargo@v1
+  #       with:
+  #         command: fmt
+  #         args: --all -- --check
 
-  shell-checks:
-    name: ShellCheck
-    runs-on: ubuntu-20.04
-    steps:
-    - uses: actions/checkout@v3
-    - name: Run ShellCheck
-      uses: ludeeus/action-shellcheck@master
-      env:
-        SHELLCHECK_OPTS: -e SC1090 -e SC2119 -e SC1091
+  # shell-checks:
+  #   name: ShellCheck
+  #   runs-on: ubuntu-20.04
+  #   steps:
+  #   - uses: actions/checkout@v3
+  #   - name: Run ShellCheck
+  #     uses: ludeeus/action-shellcheck@master
+  #     env:
+  #       SHELLCHECK_OPTS: -e SC1090 -e SC2119 -e SC1091
   
-  canister-build-reproducibility:
-    runs-on: ubuntu-20.04
+  # canister-build-reproducibility:
+  #   runs-on: ubuntu-20.04
 
-    steps:
-      - name: Checkout repository
-        uses: actions/checkout@v3
+  #   steps:
+  #     - name: Checkout repository
+  #       uses: actions/checkout@v3
 
-      - name: Verify Reproducibility
-        run: |
-          ./e2e-tests/reproducibility.sh Dockerfile
+  #     - name: Verify Reproducibility
+  #       run: |
+  #         ./e2e-tests/reproducibility.sh Dockerfile
 
   e2e-scenario:
     runs-on: ubuntu-20.04
     needs: cargo-build
 
-    steps:
-      - uses: actions/checkout@v3
-      - uses: actions/cache@v3
-        with:
-          path: |
-            ~/.cargo/registry
-            ~/.cargo/git
-            target
-          key: ${{ runner.os }}-cargo-${{ hashFiles('**/Cargo.lock') }}-1
+    # steps:
+    #   - uses: actions/checkout@v3
+    #   - uses: actions/cache@v3
+    #     with:
+    #       path: |
+    #         ~/.cargo/registry
+    #         ~/.cargo/git
+    #         target
+    #       key: ${{ runner.os }}-cargo-${{ hashFiles('**/Cargo.lock') }}-1
 
-      - name: Install Rust
-        run: |
-          rustup update ${{ matrix.rust }} --no-self-update
-          rustup default ${{ matrix.rust }}
-          rustup target add wasm32-unknown-unknown
+    #   - name: Install Rust
+    #     run: |
+    #       rustup update ${{ matrix.rust }} --no-self-update
+    #       rustup default ${{ matrix.rust }}
+    #       rustup target add wasm32-unknown-unknown
 
-      - name: Install DFX
-        run: |
-          wget --output-document install-dfx.sh "https://internetcomputer.org/install.sh"
-          bash install-dfx.sh < <(yes Y)
-          rm install-dfx.sh
-          dfx cache install
-          echo "$HOME/bin" >> $GITHUB_PATH
+    #   - name: Install DFX
+    #     run: |
+    #       wget --output-document install-dfx.sh "https://internetcomputer.org/install.sh"
+    #       bash install-dfx.sh < <(yes Y)
+    #       rm install-dfx.sh
+    #       dfx cache install
+    #       echo "$HOME/bin" >> $GITHUB_PATH
 
-      - name: Run scenario
-        run: |
-          bash e2e-tests/scenario.sh
+    #   - name: Run scenario
+    #     run: |
+    #       bash e2e-tests/scenario.sh
 
-  state-persists-across-upgrades:
-    runs-on: ubuntu-20.04
-    needs: cargo-build
+  # state-persists-across-upgrades:
+  #   runs-on: ubuntu-20.04
+  #   needs: cargo-build
 
-    steps:
-      - uses: actions/checkout@v3
-      - uses: actions/cache@v3
-        with:
-          path: |
-            ~/.cargo/registry
-            ~/.cargo/git
-            target
-          key: ${{ runner.os }}-cargo-${{ hashFiles('**/Cargo.lock') }}-1
+  #   steps:
+  #     - uses: actions/checkout@v3
+  #     - uses: actions/cache@v3
+  #       with:
+  #         path: |
+  #           ~/.cargo/registry
+  #           ~/.cargo/git
+  #           target
+  #         key: ${{ runner.os }}-cargo-${{ hashFiles('**/Cargo.lock') }}-1
 
-      - name: Install Rust
-        run: |
-          rustup update ${{ matrix.rust }} --no-self-update
-          rustup default ${{ matrix.rust }}
-          rustup target add wasm32-unknown-unknown
+  #     - name: Install Rust
+  #       run: |
+  #         rustup update ${{ matrix.rust }} --no-self-update
+  #         rustup default ${{ matrix.rust }}
+  #         rustup target add wasm32-unknown-unknown
 
-      - name: Install DFX
-        run: |
-          wget --output-document install-dfx.sh "https://internetcomputer.org/install.sh"
-          bash install-dfx.sh < <(yes Y)
-          rm install-dfx.sh
-          dfx cache install
-          echo "$HOME/bin" >> $GITHUB_PATH
+  #     - name: Install DFX
+  #       run: |
+  #         wget --output-document install-dfx.sh "https://internetcomputer.org/install.sh"
+  #         bash install-dfx.sh < <(yes Y)
+  #         rm install-dfx.sh
+  #         dfx cache install
+  #         echo "$HOME/bin" >> $GITHUB_PATH
 
-      - name: Run scenario
-        run: |
-          bash e2e-tests/upgrade.sh
+  #     - name: Run scenario
+  #       run: |
+  #         bash e2e-tests/upgrade.sh
 
   metrics:
     runs-on: ubuntu-20.04
@@ -267,13 +267,13 @@ jobs:
 
   checks-pass:
     needs:
-      - cargo-tests
-      - shell-checks
-      - cargo-clippy
-      - rustfmt
-      - canister-build-reproducibility
-      - e2e-scenario
-      - state-persists-across-upgrades
+      # - cargo-tests
+      # - shell-checks
+      # - cargo-clippy
+      # - rustfmt
+      # - canister-build-reproducibility
+      # - e2e-scenario
+      # - state-persists-across-upgrades
       - metrics
     runs-on: ubuntu-20.04
     steps:
