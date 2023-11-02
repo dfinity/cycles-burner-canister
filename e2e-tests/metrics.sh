@@ -24,7 +24,8 @@ check_metrics() {
   done
 }
 
-trap 'dfx stop' EXIT SIGINT
+# Run dfx stop if we run into errors.
+trap "dfx stop" EXIT SIGINT
 
 dfx start --background --clean
 
