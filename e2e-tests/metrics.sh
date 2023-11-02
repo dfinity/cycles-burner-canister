@@ -19,7 +19,7 @@ check_metrics() {
   for name_and_value in "${METRIC_NAMES_AND_VALUES[@]}"; do
     if ! [[ $metrics == *"$name_and_value"* ]]; then
       echo "FAIL: metric with value: \"$name_and_value\" not found in metrics of ${0##*/}"
-      EXIT SIGINT
+      EXIT 1
     fi
   done
 }
