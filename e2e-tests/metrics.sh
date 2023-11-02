@@ -27,27 +27,32 @@ check_metrics() {
 # Run dfx stop if we run into errors.
 trap "dfx stop" EXIT SIGINT
 
+# Start dfx.
 dfx start --background --clean
 
 INITIAL_BALANCE=100000000000
 BURN_AMOUNT="10000000000"
 INTERVAL=10
 
-
-# Deploy canister
+# Deploy canister.
 dfx deploy --no-wallet --with-cycles "$INITIAL_BALANCE" cycles-burner-canister --argument "(opt record {
     interval_between_timers_in_seconds = $INTERVAL;
     burn_amount = $BURN_AMOUNT;
 })"
 
+# Check metrics after canister is deployed.
 check_metrics $BURN_AMOUNT $INTERVAL 0 0
 
+# Wait for the global timer.
 sleep $((INTERVAL + 1))
 
+# Check metrics after the first global timer is executed.
 check_metrics $BURN_AMOUNT $INTERVAL 1 $BURN_AMOUNT
 
+# Wait for the global timer.
 sleep $((INTERVAL + 1))
 
+# Check metrics after the second global timer is executed.
 check_metrics $BURN_AMOUNT $INTERVAL 2 $((2 * BURN_AMOUNT))
 
 echo "SUCCESS"
