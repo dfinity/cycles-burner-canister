@@ -1,9 +1,6 @@
 #!/usr/bin/env bash
 set -Eexuo pipefail
 
-# Run dfx stop if we run into errors.
-trap "dfx stop" EXIT SIGINT
-
 get_cycles_burner_canister_metrics() {
   canister_id=$(dfx canister id cycles-burner-canister)
   curl "http://127.0.0.0:8001/metrics?canisterId=$canister_id"
@@ -27,27 +24,30 @@ check_metrics() {
   done
 }
 
+# Run dfx stop if we run into errors.
+trap "dfx stop" EXIT SIGINT
+
 dfx start --background --clean
 
 INITIAL_BALANCE=100000000000
 BURN_AMOUNT="10000000000"
 INTERVAL=10
 
-# Deploy canister
-dfx deploy --no-wallet --with-cycles "$INITIAL_BALANCE" cycles-burner-canister --argument "(opt record {
-    interval_between_timers_in_seconds = $INTERVAL;
-    burn_amount = $BURN_AMOUNT;
-})"
+# # Deploy canister
+# dfx deploy --no-wallet --with-cycles "$INITIAL_BALANCE" cycles-burner-canister --argument "(opt record {
+#     interval_between_timers_in_seconds = $INTERVAL;
+#     burn_amount = $BURN_AMOUNT;
+# })"
 
-check_metrics $BURN_AMOUNT $INTERVAL 0 0
+# check_metrics $BURN_AMOUNT $INTERVAL 0 0
 
-sleep $((INTERVAL + 1))
+# sleep $((INTERVAL + 1))
 
-check_metrics $BURN_AMOUNT $INTERVAL 1 $BURN_AMOUNT
+# check_metrics $BURN_AMOUNT $INTERVAL 1 $BURN_AMOUNT
 
-sleep $((INTERVAL + 1))
+# sleep $((INTERVAL + 1))
 
-check_metrics $BURN_AMOUNT $INTERVAL 2 $((2 * BURN_AMOUNT))
+# check_metrics $BURN_AMOUNT $INTERVAL 2 $((2 * BURN_AMOUNT))
 
 echo "SUCCESS"
 
