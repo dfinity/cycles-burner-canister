@@ -107,7 +107,6 @@ fn post_upgrade() {
 /// Processes external HTTP requests.
 #[query]
 pub fn http_request(request: CandidHttpRequest) -> CandidHttpResponse {
-    ic_cdk::println!("In metrics\n\n\nIn");
     let parts: Vec<&str> = request.url.split('?').collect();
     match parts[0] {
         "/metrics" => crate::metrics::get_metrics(),
