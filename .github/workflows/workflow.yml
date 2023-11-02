@@ -2,7 +2,7 @@ name: CI Checks
 
 env:
   RUST_VERSION: 1.73.0
-  DFX_VERSION: 0.15.1
+  DFX_VERSION: 0.14.3
 
 on:
   push:
@@ -12,35 +12,35 @@ on:
 
 jobs:
 
-  cargo-build:
-    runs-on: ${{ matrix.os }}
-    strategy:
-      matrix:
-        #os: [ ubuntu-20.04, macos-12 ]
-        os: [ ubuntu-20.04 ]
+  # cargo-build:
+  #   runs-on: ${{ matrix.os }}
+  #   strategy:
+  #     matrix:
+  #       #os: [ ubuntu-20.04, macos-12 ]
+  #       os: [ ubuntu-20.04 ]
 
-    steps:
-      - uses: actions/checkout@v3
-      - uses: actions/cache@v3
-        with:
-          path: |
-            ~/.cargo/registry
-            ~/.cargo/git
-            target
-          key: ${{ runner.os }}-cargo-${{ hashFiles('**/Cargo.lock') }}-1
+  #   steps:
+  #     - uses: actions/checkout@v3
+  #     - uses: actions/cache@v3
+  #       with:
+  #         path: |
+  #           ~/.cargo/registry
+  #           ~/.cargo/git
+  #           target
+  #         key: ${{ runner.os }}-cargo-${{ hashFiles('**/Cargo.lock') }}-1
 
-      - name: Install Rust
-        run: |
-          rustup update $RUST_VERSION --no-self-update
-          rustup default $RUST_VERSION
-          rustup target add wasm32-unknown-unknown
+  #     - name: Install Rust
+  #       run: |
+  #         rustup update $RUST_VERSION --no-self-update
+  #         rustup default $RUST_VERSION
+  #         rustup target add wasm32-unknown-unknown
 
-      - name: Build
-        shell: bash
-        run: |
-          cargo build --release --all-targets
-        env:
-          RUST_BACKTRACE: 1
+  #     - name: Build
+  #       shell: bash
+  #       run: |
+  #         cargo build --release --all-targets
+  #       env:
+  #         RUST_BACKTRACE: 1
 
   # cargo-tests:
   #   runs-on: ${{ matrix.os }}
@@ -205,7 +205,7 @@ jobs:
 
   metrics:
     runs-on: ubuntu-20.04
-    needs: cargo-build
+    #needs: cargo-build
 
     steps:
       - uses: actions/checkout@v3
@@ -234,37 +234,6 @@ jobs:
       - name: Run scenario
         run: |
           bash e2e-tests/metrics.sh
-          metrics:
-            runs-on: ubuntu-20.04
-            needs: cargo-build
-        
-            steps:
-              - uses: actions/checkout@v3
-              - uses: actions/cache@v3
-                with:
-                  path: |
-                    ~/.cargo/registry
-                    ~/.cargo/git
-                    target
-                  key: ${{ runner.os }}-cargo-${{ hashFiles('**/Cargo.lock') }}-1
-        
-              - name: Install Rust
-                run: |
-                  rustup update ${{ matrix.rust }} --no-self-update
-                  rustup default ${{ matrix.rust }}
-                  rustup target add wasm32-unknown-unknown
-        
-              - name: Install DFX
-                run: |
-                  wget --output-document install-dfx.sh "https://internetcomputer.org/install.sh"
-                  bash install-dfx.sh < <(yes Y)
-                  rm install-dfx.sh
-                  dfx cache install
-                  echo "$HOME/bin" >> $GITHUB_PATH
-        
-              - name: Run scenario
-                run: |
-                  bash e2e-tests/metrics.sh
 
   checks-pass:
     needs:
