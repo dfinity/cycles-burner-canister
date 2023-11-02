@@ -50,3 +50,5 @@ sleep $((INTERVAL + 1))
 check_metrics $BURN_AMOUNT $INTERVAL 2 $((2 * BURN_AMOUNT))
 
 echo "SUCCESS"
+
+exit 0
