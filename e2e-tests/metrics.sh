@@ -6,19 +6,19 @@ get_cycles_burner_canister_metrics() {
   curl "http://127.0.0.1:8000/metrics?canisterId=$canister_id"
 }
 
-# Function to check for presence of specific names in the metrics.
-check_metric_names() {
-  METRIC_NAMES=(
-    "burn_amount"
-    "interval_between_timers_in_seconds"
-    "counter"
-    "total_cycles_burnt"
+# Function to check for the presence of metric and value associated with it.
+check_metrics() {
+  METRIC_NAMES_AND_VALUES=(
+    "burn_amount $1"
+    "interval_between_timers_in_seconds $2"
+    "counter $3"
+    "total_cycles_burnt $4"
   )
 
   metrics=$(get_cycles_burner_canister_metrics)
-  for name in "${METRIC_NAMES[@]}"; do
-    if ! [[ $metrics == *"$name"* ]]; then
-      echo "FAIL: $name not found in metrics of ${0##*/}"
+  for name_and_value in "${METRIC_NAMES_AND_VALUES[@]}"; do
+    if ! [[ $metrics == *"$name_and_value"* ]]; then
+      echo "FAIL: metric with value: \"$name_and_value\" not found in metrics of ${0##*/}"
       EXIT SIGINT
     fi
   done
@@ -29,7 +29,7 @@ trap 'dfx stop' EXIT SIGINT
 dfx start --background --clean
 
 INITIAL_BALANCE=100000000000
-BURN_AMOUNT="10_000_000_000"
+BURN_AMOUNT="10000000000"
 INTERVAL=10
 
 
@@ -39,6 +39,14 @@ dfx deploy --no-wallet --with-cycles "$INITIAL_BALANCE" cycles-burner-canister -
     burn_amount = $BURN_AMOUNT;
 })"
 
-check_metric_names
+check_metrics $BURN_AMOUNT $INTERVAL 0 0
 
-echo "SUCCESS: Metrics check completed successfully for ${0##*/}"
+sleep $((INTERVAL + 1))
+
+check_metrics $BURN_AMOUNT $INTERVAL 1 $BURN_AMOUNT
+
+sleep $((INTERVAL + 1))
+
+check_metrics $BURN_AMOUNT $INTERVAL 2 $((2 * $BURN_AMOUNT))
+
+echo "SUCCESS"
