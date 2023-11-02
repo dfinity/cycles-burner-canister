@@ -47,6 +47,6 @@ check_metrics $BURN_AMOUNT $INTERVAL 1 $BURN_AMOUNT
 
 sleep $((INTERVAL + 1))
 
-check_metrics $BURN_AMOUNT $INTERVAL 2 $((2 * $BURN_AMOUNT))
+check_metrics $BURN_AMOUNT $INTERVAL 2 $((2 * BURN_AMOUNT))
 
 echo "SUCCESS"
