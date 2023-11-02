@@ -1,6 +1,10 @@
 #!/usr/bin/env bash
 set -Eexuo pipefail
 
+INITIAL_BALANCE=100000000000
+BURN_AMOUNT="10000000000"
+INTERVAL=10
+
 get_cycles_burner_canister_metrics() {
   canister_id=$(dfx canister id cycles-burner-canister)
   curl "http://127.0.0.1:8000/metrics?canisterId=$canister_id"
@@ -29,10 +33,6 @@ trap "dfx stop" EXIT SIGINT
 
 # Start dfx.
 dfx start --background --clean
-
-INITIAL_BALANCE=100000000000
-BURN_AMOUNT="10000000000"
-INTERVAL=10
 
 # Deploy canister.
 dfx deploy --no-wallet --with-cycles "$INITIAL_BALANCE" cycles-burner-canister --argument "(opt record {
